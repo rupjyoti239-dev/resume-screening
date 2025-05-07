@@ -1,5 +1,7 @@
 package com.example.resumeScreening.Be.controller;
 
+import com.example.resumeScreening.Be.dto.auth.LoginDTO;
+import com.example.resumeScreening.Be.dto.auth.LoginResponseDTO;
 import com.example.resumeScreening.Be.dto.auth.OtpDTO;
 import com.example.resumeScreening.Be.dto.auth.RegisterDTO;
 import com.example.resumeScreening.Be.response.ApiResponse;
@@ -30,7 +32,6 @@ public class AuthController {
         ApiResponse<?> response = new ApiResponse<>(
                 true,
                 message,
-                null,
                 LocalDateTime.now()
         );
         return new ResponseEntity<>(response,HttpStatus.CREATED);
@@ -40,13 +41,25 @@ public class AuthController {
     //verify otp
     @PostMapping("/verify-otp")
     public ResponseEntity<ApiResponse<?>> verifyOtp(@Valid @RequestBody OtpDTO otpDTO){
-        String message = authService.verifyOtp(otpDTO);
+        String data = authService.verifyOtp(otpDTO);
         ApiResponse<?> response = new ApiResponse<>(
                 true,
-                message,
-                null,
+                data,
                 LocalDateTime.now()
         );
         return new ResponseEntity<>(response,HttpStatus.CREATED);
+    }
+
+
+    //login
+    @PostMapping("/login")
+    public ResponseEntity<ApiResponse<LoginResponseDTO>> login(@RequestBody LoginDTO loginDTO){
+        LoginResponseDTO dto = authService.login(loginDTO);
+        ApiResponse<LoginResponseDTO> response = new ApiResponse<>(
+                true,
+                dto,
+                LocalDateTime.now()
+        );
+        return new ResponseEntity<>(response,HttpStatus.OK);
     }
 }

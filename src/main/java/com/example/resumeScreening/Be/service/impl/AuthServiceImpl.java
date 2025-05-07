@@ -1,5 +1,7 @@
 package com.example.resumeScreening.Be.service.impl;
 
+import com.example.resumeScreening.Be.dto.auth.LoginDTO;
+import com.example.resumeScreening.Be.dto.auth.LoginResponseDTO;
 import com.example.resumeScreening.Be.dto.auth.OtpDTO;
 import com.example.resumeScreening.Be.dto.auth.RegisterDTO;
 import com.example.resumeScreening.Be.entity.User;
@@ -10,7 +12,10 @@ import com.example.resumeScreening.Be.mapper.UserMapper;
 import com.example.resumeScreening.Be.repository.UserRepository;
 import com.example.resumeScreening.Be.service.AuthService;
 import com.example.resumeScreening.Be.service.EmailService;
+import com.example.resumeScreening.Be.service.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +34,16 @@ public class AuthServiceImpl implements AuthService {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+
+    @Autowired
+    private JwtService jwtService;
+
+
+
 
 
     @Override
@@ -94,6 +109,21 @@ public class AuthServiceImpl implements AuthService {
 
     }
 
+    @Override
+    public LoginResponseDTO login(LoginDTO loginDTO) {
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        loginDTO.getEmail(),
+                        loginDTO.getPassword()
+                )
+        );
+        var user =
+                userRepository.findByEmail(loginDTO.getEmail())
+                        .orElseThrow(()->new RuntimeException("user not found"));
+        String token = jwtService.generateToken(user);
+        return LoginResponseDTO.builder().accessToken(token).build();
+
+    }
 
 
 }
