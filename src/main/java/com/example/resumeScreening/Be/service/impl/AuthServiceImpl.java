@@ -6,8 +6,8 @@ import com.example.resumeScreening.Be.dto.auth.OtpDTO;
 import com.example.resumeScreening.Be.dto.auth.RegisterDTO;
 import com.example.resumeScreening.Be.entity.User;
 import com.example.resumeScreening.Be.exception.InValidOtpException;
-import com.example.resumeScreening.Be.exception.UserAlreadyExistException;
-import com.example.resumeScreening.Be.exception.UserNotFoundException;
+import com.example.resumeScreening.Be.exception.ItemAlreadyExistException;
+import com.example.resumeScreening.Be.exception.ItemNotFoundException;
 import com.example.resumeScreening.Be.mapper.UserMapper;
 import com.example.resumeScreening.Be.repository.UserRepository;
 import com.example.resumeScreening.Be.service.AuthService;
@@ -19,7 +19,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -54,7 +53,7 @@ public class AuthServiceImpl implements AuthService {
             User existingUser = existingUserOpt.get();
 
             if (existingUser.getIsVerified()) {
-                throw new UserAlreadyExistException("Email is already registered");
+                throw new ItemAlreadyExistException("Email is already registered");
             }
 
             sendOtpToUser(existingUser);
@@ -89,11 +88,11 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public String verifyOtp(OtpDTO otpDTO) {
         User user = userRepository.findByEmail(otpDTO.getEmail())
-                .orElseThrow(() -> new UserNotFoundException("User not found with email: " + otpDTO.getEmail()));
+                .orElseThrow(() -> new ItemNotFoundException("User not found with email: " + otpDTO.getEmail()));
 
 
         if(user.getIsVerified()){
-            throw new UserAlreadyExistException("User already registered");
+            throw new ItemAlreadyExistException("User already registered");
         }
 
         if (user.getOtp() == null || !user.getOtp().equals(otpDTO.getOtp())) {
@@ -119,7 +118,7 @@ public class AuthServiceImpl implements AuthService {
         );
         var user =
                 userRepository.findByEmail(loginDTO.getEmail())
-                        .orElseThrow(()->new RuntimeException("user not found"));
+                        .orElseThrow(()->new ItemNotFoundException("user not found"));
         String token = jwtService.generateToken(user);
         return LoginResponseDTO.builder().accessToken(token).build();
 

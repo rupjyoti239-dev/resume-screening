@@ -14,8 +14,8 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(UserAlreadyExistException.class)
-    public ResponseEntity<Object> handleUserAlreadyExistException(UserAlreadyExistException ex) {
+    @ExceptionHandler(ItemAlreadyExistException.class)
+    public ResponseEntity<Object> handleUserAlreadyExistException(ItemAlreadyExistException ex) {
         Map<String, Object> errorResponse = new HashMap<>();
         errorResponse.put("timestamp", LocalDateTime.now());
         errorResponse.put("status", HttpStatus.CONFLICT.value());
@@ -25,8 +25,8 @@ public class GlobalExceptionHandler {
     }
 
 
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<Object> handleUserNotFoundException(UserNotFoundException ex){
+    @ExceptionHandler(ItemNotFoundException.class)
+    public ResponseEntity<Object> handleUserNotFoundException(ItemNotFoundException ex){
         Map<String,Object> errorResponse = new HashMap<>();
        errorResponse.put("timestamp", LocalDateTime.now());
         errorResponse.put("status", HttpStatus.NOT_FOUND.value());
