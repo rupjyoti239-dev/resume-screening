@@ -1,6 +1,6 @@
 package com.example.resumeScreening.Be.config;
 
-import com.example.resumeScreening.Be.exception.ItemNotFoundException;
+import com.example.resumeScreening.Be.exception.ResourceNotFoundException;
 import com.example.resumeScreening.Be.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -30,7 +30,7 @@ public class AppConfig {
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> userRepository.findByEmail(username)
-                .orElseThrow(() -> new ItemNotFoundException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
     @Bean

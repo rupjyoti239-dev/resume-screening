@@ -32,14 +32,23 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth->auth
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/user/**").hasRole("USER")
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/hr/**").hasRole("HR")
+
+                        //password reset
+                        .requestMatchers(HttpMethod.POST,"/api/user/reset-password").hasAnyRole("ADMIN","USER","HR")
+
+
+                        // Category endpoints
                         .requestMatchers(HttpMethod.POST, "/api/categories").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/categories/{categoryId}").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/api/categories").hasAnyRole(
-                                "ADMIN",
-                                "HR","USER")
+                        .requestMatchers(HttpMethod.GET, "/api/categories").hasAnyRole("ADMIN", "HR", "USER")
+
+                        // Job endpoints
+                        .requestMatchers(HttpMethod.POST, "/api/jobs").hasRole("HR")
+                        .requestMatchers(HttpMethod.PATCH, "/api/jobs/{jobId}").hasRole("HR")
+                        .requestMatchers(HttpMethod.GET, "/api/jobs/my-jobs").hasRole("HR")
+                        .requestMatchers(HttpMethod.PATCH, "/api/jobs/{jobId}/status").hasRole("HR")
+                        .requestMatchers(HttpMethod.GET, "/api/jobs").hasAnyRole("ADMIN", "HR", "USER")
+
 
                         .anyRequest().authenticated()
                 )

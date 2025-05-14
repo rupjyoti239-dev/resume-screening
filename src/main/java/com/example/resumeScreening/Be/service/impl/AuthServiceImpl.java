@@ -4,10 +4,11 @@ import com.example.resumeScreening.Be.dto.auth.LoginDTO;
 import com.example.resumeScreening.Be.dto.auth.LoginResponseDTO;
 import com.example.resumeScreening.Be.dto.auth.OtpDTO;
 import com.example.resumeScreening.Be.dto.auth.RegisterDTO;
+import com.example.resumeScreening.Be.dto.password.ResetPasswordDTO;
 import com.example.resumeScreening.Be.entity.User;
-import com.example.resumeScreening.Be.exception.InValidOtpException;
-import com.example.resumeScreening.Be.exception.ItemAlreadyExistException;
-import com.example.resumeScreening.Be.exception.ItemNotFoundException;
+import com.example.resumeScreening.Be.exception.InValidDataException;
+import com.example.resumeScreening.Be.exception.ResourceAlreadyExistException;
+import com.example.resumeScreening.Be.exception.ResourceNotFoundException;
 import com.example.resumeScreening.Be.mapper.UserMapper;
 import com.example.resumeScreening.Be.repository.UserRepository;
 import com.example.resumeScreening.Be.service.AuthService;
@@ -15,7 +16,10 @@ import com.example.resumeScreening.Be.service.EmailService;
 import com.example.resumeScreening.Be.service.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -53,7 +57,7 @@ public class AuthServiceImpl implements AuthService {
             User existingUser = existingUserOpt.get();
 
             if (existingUser.getIsVerified()) {
-                throw new ItemAlreadyExistException("Email is already registered");
+                throw new ResourceAlreadyExistException("Email is already registered");
             }
 
             sendOtpToUser(existingUser);
@@ -88,15 +92,15 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public String verifyOtp(OtpDTO otpDTO) {
         User user = userRepository.findByEmail(otpDTO.getEmail())
-                .orElseThrow(() -> new ItemNotFoundException("User not found with email: " + otpDTO.getEmail()));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + otpDTO.getEmail()));
 
 
         if(user.getIsVerified()){
-            throw new ItemAlreadyExistException("User already registered");
+            throw new ResourceAlreadyExistException("User already registered");
         }
 
         if (user.getOtp() == null || !user.getOtp().equals(otpDTO.getOtp())) {
-            throw new InValidOtpException("Invalid or expired OTP");
+            throw new InValidDataException("Invalid or expired OTP");
         }
 
         user.setIsVerified(true);
@@ -110,19 +114,26 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public LoginResponseDTO login(LoginDTO loginDTO) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginDTO.getEmail(),
-                        loginDTO.getPassword()
-                )
-        );
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            loginDTO.getEmail(),
+                            loginDTO.getPassword()
+                    )
+            );
+        } catch (AuthenticationException ex) {
+            throw new BadCredentialsException("Invalid email or password");
+        }
         var user =
                 userRepository.findByEmail(loginDTO.getEmail())
-                        .orElseThrow(()->new ItemNotFoundException("user not found"));
+                        .orElseThrow(()->new ResourceNotFoundException("user not found"));
+
+
         String token = jwtService.generateToken(user);
         return LoginResponseDTO.builder().accessToken(token).build();
 
     }
+
 
 
 }

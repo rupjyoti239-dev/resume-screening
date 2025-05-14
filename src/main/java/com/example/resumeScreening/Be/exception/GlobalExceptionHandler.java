@@ -2,6 +2,7 @@ package com.example.resumeScreening.Be.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -14,8 +15,8 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(ItemAlreadyExistException.class)
-    public ResponseEntity<Object> handleUserAlreadyExistException(ItemAlreadyExistException ex) {
+    @ExceptionHandler(ResourceAlreadyExistException.class)
+    public ResponseEntity<Object> handleUserAlreadyExistException(ResourceAlreadyExistException ex) {
         Map<String, Object> errorResponse = new HashMap<>();
         errorResponse.put("timestamp", LocalDateTime.now());
         errorResponse.put("status", HttpStatus.CONFLICT.value());
@@ -25,8 +26,8 @@ public class GlobalExceptionHandler {
     }
 
 
-    @ExceptionHandler(ItemNotFoundException.class)
-    public ResponseEntity<Object> handleUserNotFoundException(ItemNotFoundException ex){
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<Object> handleUserNotFoundException(ResourceNotFoundException ex){
         Map<String,Object> errorResponse = new HashMap<>();
        errorResponse.put("timestamp", LocalDateTime.now());
         errorResponse.put("status", HttpStatus.NOT_FOUND.value());
@@ -35,14 +36,35 @@ public class GlobalExceptionHandler {
     }
 
 
-    @ExceptionHandler(InValidOtpException.class)
-    public ResponseEntity<Object> handleInValidOtpException(InValidOtpException ex){
+    @ExceptionHandler(InValidDataException.class)
+    public ResponseEntity<Object> handleInValidOtpException(InValidDataException ex){
         Map<String,Object> errorResponse = new HashMap<>();
         errorResponse.put("timestamp", LocalDateTime.now());
         errorResponse.put("status", HttpStatus.NOT_ACCEPTABLE.value());
         errorResponse.put("error", ex.getMessage());
         return new ResponseEntity<>(errorResponse,HttpStatus.NOT_FOUND);
     }
+
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<Object> handleBadCredentials(BadCredentialsException ex) {
+        Map<String,Object> errorResponse = new HashMap<>();
+        errorResponse.put("timestamp", LocalDateTime.now());
+        errorResponse.put("status", HttpStatus.NOT_ACCEPTABLE.value());
+        errorResponse.put("error", ex.getMessage());
+        return new ResponseEntity<>(errorResponse,HttpStatus.NOT_FOUND);
+    }
+
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Object> handleAccessDeniedException(AccessDeniedException ex){
+        Map<String,Object> errorResponse = new HashMap<>();
+        errorResponse.put("timestamp", LocalDateTime.now());
+        errorResponse.put("status", HttpStatus.FORBIDDEN.value());
+        errorResponse.put("error", ex.getMessage());
+        return new ResponseEntity<>(errorResponse,HttpStatus.NOT_FOUND);
+    }
+
 
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

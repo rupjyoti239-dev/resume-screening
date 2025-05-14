@@ -55,6 +55,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<LoginResponseDTO>> login(@RequestBody LoginDTO loginDTO){
         LoginResponseDTO dto = authService.login(loginDTO);
+
         ApiResponse<LoginResponseDTO> response = new ApiResponse<>(
                 true,
                 dto,
@@ -62,4 +63,5 @@ public class AuthController {
         );
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
+
 }
