@@ -2,6 +2,7 @@ package com.example.resumeScreening.Be.dto.job;
 
 import com.example.resumeScreening.Be.entity.Category;
 import com.example.resumeScreening.Be.entity.User;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -28,6 +29,8 @@ public class JobResponseDTO {
     private Integer numberOfPost;
     private String jobType;
     private LocalDate deadLine;
+    @JsonFormat(pattern = "dd-MM-yyyy : HH:mm")
+    private LocalDateTime createdAt;
     private String WorkMode;
     private String  postedByEmail;
     private String category;

@@ -51,6 +51,7 @@ public class JobMapper {
         dto.setJobType(job.getJobType());
         dto.setWorkMode(job.getWorkMode());
         dto.setDeadLine(job.getDeadline());
+        dto.setCreatedAt(job.getCreatedAt());
         dto.setPostedByEmail(job.getPostedBy().getEmail());
         dto.setCategory(job.getCategory());
         return dto;

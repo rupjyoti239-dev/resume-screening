@@ -1,13 +1,18 @@
 package com.example.resumeScreening.Be.controller;
 
 
+import com.example.resumeScreening.Be.dto.Application.ApplicationDTO;
 import com.example.resumeScreening.Be.dto.job.JobRequestDTO;
 import com.example.resumeScreening.Be.dto.job.JobResponseDTO;
+import com.example.resumeScreening.Be.entity.Application;
 import com.example.resumeScreening.Be.response.ApiResponse;
+import com.example.resumeScreening.Be.service.ApplicationService;
 import com.example.resumeScreening.Be.service.JobService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +20,9 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/api/jobs")
 public class JobController {
@@ -23,6 +30,10 @@ public class JobController {
 
     @Autowired
     private JobService jobService;
+
+
+    @Autowired
+    private ApplicationService applicationService;
 
     @PostMapping
     @PreAuthorize("hasRole('ROLE_HR')")
@@ -79,6 +90,22 @@ public class JobController {
     }
 
 
+
+    //delete job
+    @DeleteMapping("/{jobId}")
+    @PreAuthorize("hasRole('ROLE_HR')")
+    public ResponseEntity<ApiResponse<?>> deleteJob(@PathVariable Long jobId) {
+        String delete = jobService.deleteJob(jobId);
+        ApiResponse<?> response = new ApiResponse<>(
+                true,
+                delete,
+                LocalDateTime.now()
+        );
+        return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
+
+    }
+
+
     // update job
     @PatchMapping("/{jobId}")
     @PreAuthorize("hasRole('ROLE_HR')")
@@ -94,4 +121,37 @@ public class JobController {
     }
 
 
+
+    //get applications
+    @GetMapping("/{jobId}/applications")
+    @PreAuthorize("hasRole('ROLE_HR')")
+    public ResponseEntity<ApiResponse<List<ApplicationDTO>>> getApplicationsForJob(@PathVariable Long jobId) {
+        List<ApplicationDTO> applications = applicationService.getApplicationsForJob(jobId);
+
+        ApiResponse<List<ApplicationDTO>> response = new ApiResponse<>(
+                true,
+                applications,
+                LocalDateTime.now()
+        );
+
+        return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/{applicationId}/resume")
+    @PreAuthorize("hasRole('HR')")
+    public ResponseEntity<?> getResumeFile(@PathVariable Long applicationId) {
+        Application application = applicationService.getById(applicationId);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType(application.getFileType()));
+        headers.setContentDispositionFormData("inline", application.getFileName());
+
+        return new ResponseEntity<>(application.getFileData(), headers, HttpStatus.OK);
+    }
+
+
+
+
+
+
+}

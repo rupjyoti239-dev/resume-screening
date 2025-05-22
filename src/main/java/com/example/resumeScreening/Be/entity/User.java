@@ -16,10 +16,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Data
 @AllArgsConstructor
@@ -66,6 +63,18 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "postedBy", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Job> jobs = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private List<Application> applications;
+
+
+    @ManyToMany
+    @JoinTable(
+            name = "user_saved_jobs",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "job_id")
+    )
+    private Set<Job> savedJobs = new HashSet<>();
 
 
     @Override

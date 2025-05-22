@@ -13,6 +13,12 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.stereotype.Component;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -44,10 +50,16 @@ public class SecurityConfig {
 
                         // Job endpoints
                         .requestMatchers(HttpMethod.POST, "/api/jobs").hasRole("HR")
+                        .requestMatchers(HttpMethod.GET, "/api/jobs/{jobId}/applications").hasRole("HR")
+                        .requestMatchers(HttpMethod.GET, "/api/jobs//{applicationId}/resume").hasRole("HR")
                         .requestMatchers(HttpMethod.PATCH, "/api/jobs/{jobId}").hasRole("HR")
                         .requestMatchers(HttpMethod.GET, "/api/jobs/my-jobs").hasRole("HR")
                         .requestMatchers(HttpMethod.PATCH, "/api/jobs/{jobId}/status").hasRole("HR")
                         .requestMatchers(HttpMethod.GET, "/api/jobs").hasAnyRole("ADMIN", "HR", "USER")
+
+                        //apply
+                        .requestMatchers(HttpMethod.POST, "/api/user/applications/apply/{jobId}").hasRole("USER")
+
 
 
                         .anyRequest().authenticated()
@@ -57,4 +69,23 @@ public class SecurityConfig {
                 .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .build();
     }
+
+
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+
+        // Replace below with your frontend's origin (e.g., http://localhost:3000)
+        config.setAllowedOrigins(List.of("http://localhost:5173")); // Or use config.addAllowedOrigin("*") for public
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
+        config.setExposedHeaders(List.of("Authorization")); // If you return JWT in header
+        config.setAllowCredentials(true); // Allow cookies / credentials
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/", config); // Apply to all paths
+        return source;
+    }
+
 }

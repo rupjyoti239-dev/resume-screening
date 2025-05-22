@@ -1,10 +1,14 @@
 package com.example.resumeScreening.Be.service.impl;
 
 
+import com.example.resumeScreening.Be.dto.job.JobResponseDTO;
 import com.example.resumeScreening.Be.dto.password.ResetPasswordDTO;
+import com.example.resumeScreening.Be.entity.Job;
 import com.example.resumeScreening.Be.entity.User;
 import com.example.resumeScreening.Be.exception.InValidDataException;
 import com.example.resumeScreening.Be.exception.ResourceNotFoundException;
+import com.example.resumeScreening.Be.mapper.JobMapper;
+import com.example.resumeScreening.Be.repository.JobRepository;
 import com.example.resumeScreening.Be.repository.UserRepository;
 import com.example.resumeScreening.Be.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +16,9 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -22,6 +29,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JobRepository jobRepository;
 
 
 
@@ -48,4 +58,6 @@ public class UserServiceImpl implements UserService {
 
         return "password saved";
     }
+
+
 }

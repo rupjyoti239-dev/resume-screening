@@ -2,12 +2,12 @@ package com.example.resumeScreening.Be.service.impl;
 
 import com.example.resumeScreening.Be.dto.job.JobRequestDTO;
 import com.example.resumeScreening.Be.dto.job.JobResponseDTO;
-import com.example.resumeScreening.Be.entity.Category;
 import com.example.resumeScreening.Be.entity.Job;
 import com.example.resumeScreening.Be.entity.User;
 import com.example.resumeScreening.Be.exception.AccessDeniedException;
 import com.example.resumeScreening.Be.exception.ResourceNotFoundException;
 import com.example.resumeScreening.Be.mapper.JobMapper;
+import com.example.resumeScreening.Be.repository.ApplicationRepository;
 import com.example.resumeScreening.Be.repository.CategoryRepository;
 import com.example.resumeScreening.Be.repository.JobRepository;
 import com.example.resumeScreening.Be.repository.UserRepository;
@@ -16,9 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,6 +33,10 @@ public class JobServiceImpl implements JobService {
 
     @Autowired
     private CategoryRepository categoryRepository;
+
+
+    @Autowired
+    private ApplicationRepository applicationRepository;
 
 
     @Override
@@ -87,14 +89,16 @@ public class JobServiceImpl implements JobService {
 
     @Override
     public List<JobResponseDTO> getMyJob() {
-      String hrEmail =
-              SecurityContextHolder.getContext().getAuthentication().getName();
-      User hr = userRepository.findByEmail(hrEmail).orElseThrow(
-              ()-> new ResourceNotFoundException("HR Not Found")
-      );
+        String hrEmail =
+                SecurityContextHolder.getContext().getAuthentication().getName();
+        User hr = userRepository.findByEmail(hrEmail).orElseThrow(
+                ()-> new ResourceNotFoundException("HR Not Found")
+        );
 
-      List<Job> jobs = jobRepository.findByPostedBy(hr);
-      return jobs.stream().map(JobMapper::mapToJobResponseDTO).collect(Collectors.toList());
+        List<Job> jobs = jobRepository.findByPostedBy(hr);
+        return jobs.stream()
+                        .filter(job -> !job.isDeleted())
+                .map(JobMapper::mapToJobResponseDTO).collect(Collectors.toList());
 
     }
 
@@ -103,6 +107,7 @@ public class JobServiceImpl implements JobService {
         List<Job> jobs = jobRepository.findAll();
         return jobs.stream()
                 .filter(Job::isActive)
+                .filter(job->!job.isDeleted())
                 .map(JobMapper::mapToJobResponseDTO)
                 .collect(Collectors.toList());
     }
@@ -129,5 +134,28 @@ public class JobServiceImpl implements JobService {
         return "Status updated successfully";
 
     }
+
+    @Override
+    public String deleteJob(Long jobId) {
+        String hrEmail =
+                SecurityContextHolder.getContext().getAuthentication().getName();
+        User hr = userRepository.findByEmail(hrEmail).orElseThrow(
+                ()-> new ResourceNotFoundException("HR not found")
+        );
+
+        Job job = jobRepository.findById(jobId)
+                .orElseThrow(() -> new ResourceNotFoundException("Job not found"));
+
+        if (!job.getPostedBy().getId().equals(hr.getId())) {
+            throw new AccessDeniedException("You are not authorized to delete this job");
+        }
+
+       job.setDeleted(true);
+
+        Job updatedJob = jobRepository.save(job);
+
+        return "Job deleted successfully";
+    }
+
 
 }

@@ -10,6 +10,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -54,13 +55,24 @@ public class Job {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-//    private boolean isDeleted=false;
+    private boolean isDeleted=false;
 
 
 
     private String category;
 
+
+
+
     @ManyToOne
     @JoinColumn(name = "posted_by", nullable = false)
     private User postedBy;
+
+
+    @ManyToMany(mappedBy = "savedJobs")
+    private Set<User> savedByUsers = new HashSet<>();
+
+
+    @OneToMany(mappedBy = "job")
+    private List<Application> applications;
 }
