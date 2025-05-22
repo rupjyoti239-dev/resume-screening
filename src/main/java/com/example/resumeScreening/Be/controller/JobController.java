@@ -32,9 +32,8 @@ public class JobController {
     private JobService jobService;
 
 
-    @Autowired
-    private ApplicationService applicationService;
 
+    // add job
     @PostMapping
     @PreAuthorize("hasRole('ROLE_HR')")
     public ResponseEntity<ApiResponse<JobResponseDTO>> createJob(@RequestBody JobRequestDTO jobRequestDTO) {
@@ -48,6 +47,22 @@ public class JobController {
     }
 
 
+    // update job
+    @PatchMapping("/{jobId}")
+    @PreAuthorize("hasRole('ROLE_HR')")
+    public ResponseEntity<ApiResponse<JobResponseDTO>> updateJob(@RequestBody JobRequestDTO jobRequestDTO,
+                                                                 @PathVariable Long jobId){
+        JobResponseDTO dto = jobService.updateJob(jobRequestDTO,jobId);
+        ApiResponse<JobResponseDTO> response = new ApiResponse<>(
+                true,
+                dto,
+                LocalDateTime.now()
+        );
+        return new ResponseEntity<>(response,HttpStatus.OK);
+    }
+
+
+    //get my job (posted by logged in hr)
     @GetMapping("/my-jobs")
     @PreAuthorize("hasRole('ROLE_HR')")
     public ResponseEntity<ApiResponse<List<JobResponseDTO>>> getMyJobs() {
@@ -106,48 +121,8 @@ public class JobController {
     }
 
 
-    // update job
-    @PatchMapping("/{jobId}")
-    @PreAuthorize("hasRole('ROLE_HR')")
-    public ResponseEntity<ApiResponse<JobResponseDTO>> updateJob(@RequestBody JobRequestDTO jobRequestDTO,
-                                                                 @PathVariable Long jobId){
-        JobResponseDTO dto = jobService.updateJob(jobRequestDTO,jobId);
-        ApiResponse<JobResponseDTO> response = new ApiResponse<>(
-                true,
-                dto,
-                LocalDateTime.now()
-        );
-        return new ResponseEntity<>(response,HttpStatus.OK);
-    }
 
 
-
-    //get applications
-    @GetMapping("/{jobId}/applications")
-    @PreAuthorize("hasRole('ROLE_HR')")
-    public ResponseEntity<ApiResponse<List<ApplicationDTO>>> getApplicationsForJob(@PathVariable Long jobId) {
-        List<ApplicationDTO> applications = applicationService.getApplicationsForJob(jobId);
-
-        ApiResponse<List<ApplicationDTO>> response = new ApiResponse<>(
-                true,
-                applications,
-                LocalDateTime.now()
-        );
-
-        return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("/{applicationId}/resume")
-    @PreAuthorize("hasRole('HR')")
-    public ResponseEntity<?> getResumeFile(@PathVariable Long applicationId) {
-        Application application = applicationService.getById(applicationId);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.parseMediaType(application.getFileType()));
-        headers.setContentDispositionFormData("inline", application.getFileName());
-
-        return new ResponseEntity<>(application.getFileData(), headers, HttpStatus.OK);
-    }
 
 
 

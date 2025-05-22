@@ -13,7 +13,7 @@ public interface ApplicationService {
 
 
     //apply
-    Application apply(Long jobId, MultipartFile file);
+    String apply(Long jobId, MultipartFile file);
 
 
     //applications

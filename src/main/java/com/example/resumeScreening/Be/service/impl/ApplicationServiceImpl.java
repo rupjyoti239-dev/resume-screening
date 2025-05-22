@@ -39,7 +39,7 @@ public class ApplicationServiceImpl implements ApplicationService{
 
 
     @Override
-    public Application apply(Long jobId, MultipartFile file) {
+    public String apply(Long jobId, MultipartFile file) {
 
         // Get currently authenticated user
         String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -67,7 +67,8 @@ public class ApplicationServiceImpl implements ApplicationService{
             application.setJob(job);
             application.setUser(currentUser);
 
-            return applicationRepository.save(application);
+           applicationRepository.save(application);
+           return "Applied successfully!!!";
         } catch (IOException e) {
             throw new RuntimeException("Failed to process uploaded file", e);
         }

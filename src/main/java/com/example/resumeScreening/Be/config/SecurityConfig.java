@@ -50,15 +50,16 @@ public class SecurityConfig {
 
                         // Job endpoints
                         .requestMatchers(HttpMethod.POST, "/api/jobs").hasRole("HR")
-                        .requestMatchers(HttpMethod.GET, "/api/jobs/{jobId}/applications").hasRole("HR")
-                        .requestMatchers(HttpMethod.GET, "/api/jobs//{applicationId}/resume").hasRole("HR")
                         .requestMatchers(HttpMethod.PATCH, "/api/jobs/{jobId}").hasRole("HR")
                         .requestMatchers(HttpMethod.GET, "/api/jobs/my-jobs").hasRole("HR")
                         .requestMatchers(HttpMethod.PATCH, "/api/jobs/{jobId}/status").hasRole("HR")
+                        .requestMatchers(HttpMethod.DELETE, "/api/jobs/{jobId}").hasRole("HR")
                         .requestMatchers(HttpMethod.GET, "/api/jobs").hasAnyRole("ADMIN", "HR", "USER")
 
                         //apply
-                        .requestMatchers(HttpMethod.POST, "/api/user/applications/apply/{jobId}").hasRole("USER")
+                        .requestMatchers(HttpMethod.POST, "/api/applications/{jobId}").hasRole("USER")
+                        .requestMatchers(HttpMethod.GET, "/api/jobs/{jobId}").hasRole("HR")
+                        .requestMatchers(HttpMethod.GET, "/api/jobs//{applicationId}/resume").hasRole("HR")
 
 
 
