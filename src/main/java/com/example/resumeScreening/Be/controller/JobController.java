@@ -121,6 +121,16 @@ public class JobController {
     }
 
 
+    //search
+    @GetMapping("/search")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<List<JobResponseDTO>> searchJobs(@RequestParam String keyword) {
+        List<JobResponseDTO> jobs = jobService.searchJobsByTitle(keyword);
+        return ResponseEntity.ok(jobs);
+    }
+
+
+
 
 
 

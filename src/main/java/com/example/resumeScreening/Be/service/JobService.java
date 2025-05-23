@@ -3,6 +3,7 @@ package com.example.resumeScreening.Be.service;
 import com.example.resumeScreening.Be.dto.job.JobRequestDTO;
 import com.example.resumeScreening.Be.dto.job.JobResponseDTO;
 import com.example.resumeScreening.Be.entity.Application;
+import com.example.resumeScreening.Be.entity.Job;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -35,6 +36,8 @@ public interface JobService {
 
 
     String deleteJob(Long jobId);
+
+    List<JobResponseDTO> searchJobsByTitle(String keyword);
 
 
 

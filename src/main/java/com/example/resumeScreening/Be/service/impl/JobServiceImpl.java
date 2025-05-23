@@ -157,5 +157,16 @@ public class JobServiceImpl implements JobService {
         return "Job deleted successfully";
     }
 
+    @Override
+    public List<JobResponseDTO> searchJobsByTitle(String keyword) {
+       List<Job> jobs =  jobRepository.findByTitleContainingIgnoreCaseOrCategoryContainingIgnoreCase(keyword,keyword);
+       return jobs.stream()
+               .filter(Job::isActive)
+               .filter(job -> !job.isDeleted())
+               .map(JobMapper::mapToJobResponseDTO)
+               .collect(Collectors.toList());
+    }
+
+
 
 }

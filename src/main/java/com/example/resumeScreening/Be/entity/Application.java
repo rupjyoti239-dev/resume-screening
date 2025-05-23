@@ -24,6 +24,8 @@ public class Application {
     private String fileName;
     private String fileType;
 
+//    private Double atsScore;
+
 
     @Lob
     private byte[] fileData;

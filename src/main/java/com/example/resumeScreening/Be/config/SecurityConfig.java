@@ -54,6 +54,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/jobs/my-jobs").hasRole("HR")
                         .requestMatchers(HttpMethod.PATCH, "/api/jobs/{jobId}/status").hasRole("HR")
                         .requestMatchers(HttpMethod.DELETE, "/api/jobs/{jobId}").hasRole("HR")
+                        .requestMatchers(HttpMethod.GET, "/api/jobs/search").hasRole("USER")
                         .requestMatchers(HttpMethod.GET, "/api/jobs").hasAnyRole("ADMIN", "HR", "USER")
 
                         //apply

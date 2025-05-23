@@ -11,6 +11,8 @@ public interface JobRepository extends JpaRepository<Job,Long> {
 
   List<Job> findByPostedBy (User user);
 
+  List<Job> findByTitleContainingIgnoreCaseOrCategoryContainingIgnoreCase(String titleKeyword, String categoryKeyword);
+
 
 
 }
