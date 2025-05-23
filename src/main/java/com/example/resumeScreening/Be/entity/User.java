@@ -68,13 +68,7 @@ public class User implements UserDetails {
     private List<Application> applications;
 
 
-    @ManyToMany
-    @JoinTable(
-            name = "user_saved_jobs",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "job_id")
-    )
-    private Set<Job> savedJobs = new HashSet<>();
+
 
 
     @Override

@@ -62,7 +62,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/jobs/{jobId}").hasRole("HR")
                         .requestMatchers(HttpMethod.GET, "/api/jobs//{applicationId}/resume").hasRole("HR")
 
-
+                        //save job
+                        .requestMatchers("/api/save-job").hasRole("USER")
 
                         .anyRequest().authenticated()
                 )

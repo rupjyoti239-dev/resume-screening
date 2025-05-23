@@ -69,8 +69,6 @@ public class Job {
     private User postedBy;
 
 
-    @ManyToMany(mappedBy = "savedJobs")
-    private Set<User> savedByUsers = new HashSet<>();
 
 
     @OneToMany(mappedBy = "job")
