@@ -85,7 +85,6 @@ public class ApplicationServiceImpl implements ApplicationService{
         Job job = jobRepository.findById(jobId)
                 .orElseThrow(() -> new ResourceNotFoundException("Job not found"));
 
-        // Ensure the logged-in HR is the one who posted the job
         if (!job.getPostedBy().getId().equals(hrUser.getId())) {
             throw new AccessDeniedException("You are not authorized to view applications for this job");
         }

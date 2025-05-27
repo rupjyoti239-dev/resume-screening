@@ -76,7 +76,7 @@ public class JobController {
     }
 
 
-    // 3. Get all jobs (Accessible by user, admin, hr)
+    // 3. Get all jobs ( by user, admin, hr)
     @GetMapping
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER', 'ROLE_HR')")
     public ResponseEntity<ApiResponse<List<JobResponseDTO>>> getAllJobs() {
