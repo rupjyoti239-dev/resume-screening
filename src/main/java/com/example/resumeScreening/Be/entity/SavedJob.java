@@ -28,4 +28,5 @@ public class SavedJob {
 
     @CreationTimestamp
     private LocalDateTime savedAt;
+
 }
